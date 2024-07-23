@@ -1,0 +1,32 @@
+{% extends "./layout.html" %}
+
+{% block content %}
+<h3>All Orders Available</h3>
+<table class="table">
+  <thead>
+    <tr>
+      <th>Order ID</th>
+      <th>Order Date</th>
+      <th>Company Name</th>
+      <th>Product Name</th>
+      <th>Unit Price</th>
+      <th>Quantity</th>
+      <th>Bill Amout</th>
+    </tr>
+  </thead>
+  <tbody>
+    {% for order in orders%}
+    <tr>
+    {% comment "name of columns in database" %}{% endcomment %}
+    <td>{{order.OrderID}}</td>
+    <td>{{order.OrderDate}}</td>
+    <td>{{order.CompanyName}}</td>
+    <td>{{order.ProductName}}</td>
+    <td>{{order.UnitPrice}}</td>
+    <td>{{order.Quantity}}</td>
+    <td>{{order.BillAmount}}</td>
+    </tr>
+    {% endfor %}
+  </tbody>
+</table>
+{% endblock content %}
