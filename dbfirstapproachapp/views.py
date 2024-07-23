@@ -17,11 +17,35 @@ def GetEmployeeBasedOnRawQuery(request):
     cursor = conn.cursor()
     cursor.execute(sql_query)
     orders = cursor.fetchall()
-  
-    return render(request,'dbfirstapproach/showorders.html',{'orders':orders})
     
+    return render(request,'dbfirstapproach/showorders.html',{'orders':orders})
+
+#* is efficient way  using procedures
+def StoreProceduresDemo(request):
+    # procedureName ='USP_GetAllOrders'
+    conn = Connection()
+    cursor = conn.cursor()
+    cursor.execute("{call USP_GetAllOrders}")
+    orders = cursor.fetchall()
+    return render(request,'dbfirstapproach/showorders.html',{'orders':orders}) 
+
+def SPWithOutputParameter(request):
+    # procedureName ='USP_GetAllOrders'
+    conn = Connection()
+    cursor = conn.cursor()
+    # fetch total number of orders with procedures with output parameter
+    count=0
+    cursor.execute("{call USP_GetOrdersCount(?)}",count)
+    counts = cursor.fetchval()
+    # # fetch All orders with procedure
+    cursor.execute("{call USP_GetAllOrders}") # output parameter => count
+    orders = cursor.fetchall()
+    
+    return render(request,'dbfirstapproach/showorders.html',{'orders':orders,'counts':counts}) 
 
 def Connection():
+    
     ''' Related With Database Connection'''
     conn = pyodbc.connect('DRIVER=ODBC Driver 17 for SQL Server;Server=KINGDOMTECH;Database=northwind;Trusted_Connection=Yes;')
     return (conn)
+
