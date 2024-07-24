@@ -1,6 +1,6 @@
 {% extends "./layout.html" %} {% block content %}
 <h3>All Orders Available</h3>
-<table class="table">
+<table class="table table-striped">
   <thead>
     <tr>
       <th>Order ID</th>
@@ -10,10 +10,12 @@
       <th>Unit Price</th>
       <th>Quantity</th>
       <th>Bill Amout</th>
+      <th>Running Total</th>
+      <th>Running Order Total</th>
     </tr>
   </thead>
   <tbody>
-    {% for order in orders%}
+    {% for order in orders%} {% if order.OrderID %}
     <tr>
       {% comment "name of columns in database" %}{% endcomment %}
       <td>{{order.OrderID}}</td>
@@ -23,9 +25,26 @@
       <td>{{order.UnitPrice}}</td>
       <td>{{order.Quantity}}</td>
       <td>{{order.BillAmount}}</td>
+      <td>{{order.RunningTotal}}</td>
+      <td>{{order.RunningOrderTotal}}</td>
     </tr>
-    {% endfor %}
+    {% else %}
+    <tr>
+      <td colspan="5"></td>
+      <td class="fw-bolder">Sub Total:</td>
+      <td class="fw-bolder">{{order.RunningTotal}}</td>
+      <td colspan="2"></td>
+    </tr>
+    {% endif %} {% endfor %}
   </tbody>
+  <tfoot>
+    <tr class="table-dark">
+      {% comment "name of columns in database" %}{% endcomment %}
+      <td colspan="7"></td>
+      <td class="fw-bolder">Grand Total :</td>
+      <td>{{grandTotal}}</td>
+    </tr>
+  </tfoot>
 </table>
 {% if counts %}
 <h3>Total Number of Order:{{counts}}</h3>
