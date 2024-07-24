@@ -1,6 +1,6 @@
 from django.shortcuts import render
 
-from dbfirstapproachapp.models import Categories, Orders
+from dbfirstapproachapp.models import Categories, OrderDetails, Orders
 import pyodbc
 from django.db.models import Q,Avg,Max,Min,Sum,Count
 # Create your views here.
@@ -184,4 +184,14 @@ def FilteringQuerySetsDemo(request):
     
     return render(request,'dbfirstapproach/filteringDemo.html',dict)
     
+    
+def AccordoinDemo(request):
+    #* Logic tricky
+    orders =Orders.objects.filter(orderid__range=[10248,10255]).order_by('orderid')
+    orders_ids = [ order.orderid for order in orders] # ids for all orders
+    orders_details = OrderDetails.objects.filter(orderid__in=orders_ids)
+    
+    dict ={'orders':orders,
+           'orders_details':orders_details}
+    return render(request,'dbfirstapproach/accordoindemo.html',dict)
     
