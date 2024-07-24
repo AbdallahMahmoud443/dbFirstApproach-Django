@@ -1,7 +1,8 @@
 from django.shortcuts import render
 
-from dbfirstapproachapp.models import Categories
+from dbfirstapproachapp.models import Categories, Orders
 import pyodbc
+from django.db.models import Q,Avg,Max,Min,Sum,Count
 # Create your views here.
 
 def ShowCategories(request):
@@ -89,7 +90,6 @@ def GenerateNewOrder (order,runningTotal,runningOrderTotal):
             "RunningOrderTotal":runningOrderTotal
         }
     return newOrder
-
   
 def SPWithOutputParameter(request):
     # procedureName ='USP_GetAllOrders'
@@ -112,3 +112,76 @@ def Connection():
     conn = pyodbc.connect('DRIVER=ODBC Driver 17 for SQL Server;Server=KINGDOMTECH;Database=northwind;Trusted_Connection=Yes;')
     return (conn)
 
+def FilteringQuerySetsDemo(request):
+    #* Get All Records
+    # orders = Orders.objects.all()
+    # print(type(orders)) # <class 'django.db.models.query.QuerySet'>
+    # print(str(orders.query)) # return raw sql query
+    #* Greater Than
+    #orders = Orders.objects.filter(freight__gt=20)
+    #* Greater Than or equal
+    #orders = Orders.objects.filter(freight__gte=20)  
+    #* Less Than
+    #orders = Orders.objects.filter(freight__lt=20)
+    #* Less Than or equal
+    #orders = Orders.objects.filter(freight__lte=20)
+    #* Exact
+    #orders = Orders.objects.filter(shipcountry__exact='Germany')
+    #orders = Orders.objects.filter(orderid__exact=10255)
+    #* Contains
+    #orders = Orders.objects.filter(shipcountry__contains='land')  
+    #* in
+    #orders = Orders.objects.filter(employeeid__in=[1,2,3,5]).order_by('employeeid') # ascending order
+    #orders = Orders.objects.filter(employeeid__in=[1,2,3,5]).order_by('-employeeid') # => - before columnName => descending
+    #* startsWith && endsWith
+    #orders = Orders.objects.filter(shipname__startswith='A')
+    #orders = Orders.objects.filter(shipname__endswith='e') 
+    #* Range 
+    #orders = Orders.objects.filter(freight__range=[10,20])
+    #* two query filter set (OR)
+    #orders = Orders.objects.filter(shipname__startswith='A') | Orders.objects.filter(freight__lt=20)
+    #* two query filter set using Q model (OR)
+    #orders = Orders.objects.filter(Q(shipname__startswith='A') | Q(freight__lt=20))
+    #* two query filter set (AND)
+    #orders = Orders.objects.filter(shipname__startswith='A') & Orders.objects.filter(freight__lt=20)         
+    #* two query filter set using Q model (OR)
+    #orders = Orders.objects.filter(Q(shipname__startswith='A') & Q(freight__lt=20))
+    #orders = Orders.objects.filter(Q(shipname__startswith='S') & Q(freight__gte=15))
+    #* two query filter set (AND) second way
+    #orders = Orders.objects.filter(shipname__startswith='A',freight__lt=20)
+    
+    #! Methods for query sets (Not)
+    #* Exclude == ~ ===>  not
+    #orders = Orders.objects.exclude(shipname__startswith='A')
+    #orders = Orders.objects.filter(~Q(shipname__startswith='S'))
+    
+    #! Odering 
+    #orders = Orders.objects.all().order_by('orderid')
+    #orders = Orders.objects.all().order_by('-orderid')
+    #orders = Orders.objects.all().order_by('shipcountry')
+    #* Filtering Based On Two Columns
+    #orders = Orders.objects.all().order_by('employeeid','orderid')
+    #* Filter Based on Date =>(year,month,day,hour,second,minute)
+    year = 1998
+    orders = Orders.objects.filter(orderdate__year=year).order_by('employeeid','orderid')
+    
+    #! Aggregation
+    avg = Orders.objects.all().aggregate(Avg('freight'))
+    max = Orders.objects.all().aggregate(Max('freight'))
+    min = Orders.objects.all().aggregate(Min('freight'))
+    sum = Orders.objects.all().aggregate(Sum('freight'))
+    count = Orders.objects.all().aggregate(Count('freight'))
+    dict={
+        'orders':orders,
+        'avg':avg['freight__avg'],
+        'max':max['freight__max'],
+        'min':min['freight__min'],
+        'sum':sum['freight__sum'],
+        'count':count['freight__count'],
+    }
+    
+    
+    
+    return render(request,'dbfirstapproach/filteringDemo.html',dict)
+    
+    
