@@ -8,4 +8,5 @@ urlpatterns = [
     path('spwithoutputparameter',views.SPWithOutputParameter,name="SPWithOutputParameterPage"),
     path('filteringdemo',views.FilteringQuerySetsDemo,name="FilteringDemoPage"),
     path('accordoindemo',views.AccordoinDemo,name="AccordoinDemoPage"),
+    path('mlaccordoindemo',views.MutiLevelAccordoinDemo,name="MLAccordoinDemoPage"),
 ]

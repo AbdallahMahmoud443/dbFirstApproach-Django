@@ -1,6 +1,6 @@
 from django.shortcuts import render
 
-from dbfirstapproachapp.models import Categories, OrderDetails, Orders
+from dbfirstapproachapp.models import Categories, Employees, OrderDetails, Orders
 import pyodbc
 from django.db.models import Q,Avg,Max,Min,Sum,Count
 # Create your views here.
@@ -194,4 +194,17 @@ def AccordoinDemo(request):
     dict ={'orders':orders,
            'orders_details':orders_details}
     return render(request,'dbfirstapproach/accordoindemo.html',dict)
-    
+
+
+def MutiLevelAccordoinDemo(request):
+    employees = Employees.objects.filter(employeeid__in=[1,2,4,8])
+    employees_ids = [emp.employeeid for emp in employees]
+    orders = Orders.objects.filter(employeeid__in=employees_ids,orderdate__month=3,orderdate__day=27);
+    orders_ids = [ order.orderid for order in orders] # ids for all orders
+    orders_details = OrderDetails.objects.filter(orderid__in=orders_ids)
+    dict = {
+        'employees':employees,
+        'orders':orders,
+        'orders_details':orders_details
+    }
+    return render(request,'dbfirstapproach/mutilevelaccordoin.html',dict)

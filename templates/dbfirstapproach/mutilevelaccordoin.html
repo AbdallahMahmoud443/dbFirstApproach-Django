@@ -1,0 +1,113 @@
+{% extends "./layout.html" %} {% block content %}
+<h3>Multi Level Accordion Demo</h3>
+
+<div class="accordion">
+  <div class="actions my-2">
+    <button type="button" class="btn btn-success" onclick="toggleAll(2)">
+      Collapse All
+    </button>
+    <button type="button" class="btn btn-success" onclick="toggleAll(1)">
+      Expand All
+    </button>
+    <button class="btn btn-success" type="button" onclick="toggleAll(3)">
+      Expand All Orders
+    </button>
+    <button class="btn btn-success" type="button" onclick="toggleAll(4)">
+      Collapse All Orders
+    </button>
+    <button class="btn btn-success" type="button" onclick="toggleAll(5)">
+      Expand All Order Details
+    </button>
+    <button class="btn btn-success" type="button" onclick="toggleAll(6)">
+      Collapse All Order Details
+    </button>
+  </div>
+  <table id="customers">
+    <thead>
+      <tr>
+        <th>Employee ID</th>
+        <th>First Name</th>
+        <th>Last Name</th>
+        <th style="width: 70%">Order Information</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for employee in employees %}
+      <tr>
+        <td>{{employee.employeeid}}</td>
+        <td>{{employee.firstname}}</td>
+        <td>
+          {{employee.lastname}}
+          <i
+            id="EmployeeId-{{employee.employeeid}}"
+            class="my-icon fa fa-solid top-0 end-0 m-2 text-success fa-plus"
+            onclick="appendTd(event,{{employee.employeeid}},1)"
+          ></i>
+        </td>
+        <td style="width: 70%" class="position-relative">
+          <table id="orders-{{employee.employeeid}}" style="display: none">
+            <thead>
+              <tr>
+                <th>Order ID</th>
+                <th>Order Date</th>
+                <th>Company Name</th>
+                <th style="width: 70%">Order Details</th>
+              </tr>
+            </thead>
+            <tbody>
+              <div id="order">
+                {% for order in orders %}
+                <tr>
+                  {% if order.employeeid == employee %}
+                  <td>{{order.orderid}}</td>
+                  <td>{{ order.orderdate }}</td>
+                  <td>
+                    {{ order.customerid.companyname }}
+                    <i
+                      id="OrderId-{{order.orderid}}"
+                      class="my-icon fa fa-solid top-0 end-0 m-2 fa-plus"
+                      onclick="appendTd(event,{{order.orderid}},2)"
+                    ></i>
+                  </td>
+                  <td>
+                    <table
+                      id="orders_details-{{order.orderid}}"
+                      style="display: none"
+                      class="orders_details"
+                    >
+                      <thead>
+                        <tr>
+                          <th>Product Name</th>
+                          <th>Unit Price</th>
+                          <th>Quantity</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        <div id="orderDetail">
+                          {% for order_detail in orders_details %}
+                          <tr>
+                            {% if order_detail.orderid == order %}
+                            <td>{{order_detail.productid.productname}}</td>
+                            <td>{{ order_detail.unitprice }}</td>
+                            <td>{{ order_detail.quantity }}</td>
+                            {% endif %}
+                          </tr>
+                          {% endfor %}
+                        </div>
+                      </tbody>
+                    </table>
+                  </td>
+                  {% endif %}
+                </tr>
+                {% endfor %}
+              </div>
+            </tbody>
+          </table>
+        </td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</div>
+
+{% endblock content %}
