@@ -1,0 +1,19 @@
+
+{% extends "./layout.html" %} 
+{% comment %}  must to load tamplate tag {% endcomment %}
+{% load custom_tags %}
+{% block content %}
+
+<h3>Accordion Tamplate Tag Demo</h3>
+
+<div class="accordion">
+  <div class="actions my-2">
+    <button type="button" class="btn btn-success" onclick="toggleAllOne(0)">Collapse All</button>
+    <button type="button" class="btn btn-success" onclick="toggleAllOne(1)">Expand All</button>
+  </div>
+  {% comment %} Create Cunstom Template Tag {% endcomment %}
+  {% show_orders start=10251 end=10255%}
+
+</div>
+
+{% endblock content %}

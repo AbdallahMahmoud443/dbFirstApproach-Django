@@ -1,27 +1,32 @@
  // accordoin Functionality
- function appendTd(event, index) {
-    target = event.currentTarget;
-    classList = target.classList;
-  // change shape of icon
-    if (classList.toString().endsWith("fa-plus")) {
-      classList.remove('fa-plus');
-      classList.add('fa-minus');
-    }
-    else {
-      classList.remove('fa-minus');
-      classList.add('fa-plus');
-    }
-    // get order details table
-    var orders = document.getElementById("orders_details-" + index);
-    orders.style.display = orders.style.display === 'none' ? 'block' : 'none';
+ function appendTdOne(event, index) {
+  target = event.currentTarget;
+  classList = target.classList;
+// change shape of icon
+  if (classList.toString().endsWith("fa-plus")) {
+    classList.remove('fa-plus');
+    classList.add('fa-minus');
   }
+  else {
+    classList.remove('fa-minus');
+    classList.add('fa-plus');
+    console.log("asdasd");
+  }
+  // get order details table
+
+  var orders = document.getElementById("orders_details-" + index);
+
+  orders.style.display = orders.style.display === 'none' ? 'block' : 'none';
+}
 
 
   
-  function toggleAll(action){
+  function toggleAllOne(action){
     orders_details = document.querySelectorAll('.orders_details');
     // closing 
+    console.log(action)
     if (action === 0){
+      console.log('asd')
       icons = document.querySelectorAll('.fa-minus');
       orders_details.forEach((order)=>{
         order.style.display = 'none'
@@ -32,6 +37,8 @@
               icon.classList.add('fa-plus')
         }
       });
+
+
     // Openning
     }else if(action === 1){
       icons = document.querySelectorAll('.fa-plus');

@@ -1,13 +1,4 @@
-{% extends "./layout.html" %} {% block content %}
-<h3>Accordion Demo</h3>
-
-<div class="accordion">
-  <div class="actions my-2">
-    <button type="button" class="btn btn-success" onclick="toggleAllOne(0)">Collapse All</button>
-    <button type="button" class="btn btn-success" onclick="toggleAllOne(1)">Expand All</button>
-  </div>
-
-  <table id="customers">
+<table id="customers">
     <thead>
       <tr>
         <th>Order Id</th>
@@ -52,6 +43,3 @@
     </tbody>
   </table>
   
-</div>
-
-{% endblock content %}

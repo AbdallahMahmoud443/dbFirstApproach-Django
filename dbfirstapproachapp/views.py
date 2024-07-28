@@ -208,3 +208,7 @@ def MutiLevelAccordoinDemo(request):
         'orders_details':orders_details
     }
     return render(request,'dbfirstapproach/mutilevelaccordoin.html',dict)
+
+
+def ShowOrdersUsingTamplateTag(request):
+    return render(request,'dbfirstapproach/showorderusingtemplatetag.html')
