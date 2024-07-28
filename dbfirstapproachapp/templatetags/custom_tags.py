@@ -18,3 +18,8 @@ def show_orders(start=10248,end=10255):
     
     return dict
 
+# Create Custom tag to calculate Simple Value or one Value
+@register.simple_tag(name='calculate_billAmount')
+def calculate_billAmount(qunatity,unitPrice):
+       return (qunatity * unitPrice)
+       

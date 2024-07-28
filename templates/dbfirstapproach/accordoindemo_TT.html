@@ -1,3 +1,4 @@
+{% load custom_tags %}
 <table id="customers">
     <thead>
       <tr>
@@ -20,6 +21,7 @@
                 <th>Product Name</th>
                 <th>Unit Price</th>
                 <th>Quantity</th>
+                <th>Bill Amount</th>
               </tr>
             </thead>
             <tbody>
@@ -30,6 +32,8 @@
                     <td>{{order_detail.productid.productname}}</td>
                     <td>{{ order_detail.unitprice }}</td>
                     <td>{{ order_detail.quantity }}</td>
+                    {% comment %} Simple Custom Tag {% endcomment %}
+                    <td>{% calculate_billAmount qunatity=order_detail.quantity unitPrice=order_detail.unitprice%}</td>
                     {% endif %} 
                     </tr>
                     {% endfor %}
