@@ -3,6 +3,7 @@ from django.shortcuts import render
 from dbfirstapproachapp.models import Categories, Employees, OrderDetails, Orders
 import pyodbc
 from django.db.models import Q,Avg,Max,Min,Sum,Count
+from django.views.decorators.cache import cache_page
 # Create your views here.
 
 def ShowCategories(request):
@@ -212,3 +213,17 @@ def MutiLevelAccordoinDemo(request):
 
 def ShowOrdersUsingTamplateTag(request):
     return render(request,'dbfirstapproach/showorderusingtemplatetag.html')
+
+@cache_page(60 * 5) # 5 Minutes Output page cahching (get output of page from cahc memory)
+def CachingDemo(request):
+    employees = Employees.objects.filter(employeeid__in=[1,2,4,8])
+    employees_ids = [emp.employeeid for emp in employees]
+    orders = Orders.objects.filter(employeeid__in=employees_ids,orderdate__month=3,orderdate__day=27);
+    orders_ids = [ order.orderid for order in orders] # ids for all orders
+    orders_details = OrderDetails.objects.filter(orderid__in=orders_ids)
+    dict = {
+        'employees':employees,
+        'orders':orders,
+        'orders_details':orders_details
+    }
+    return render(request,'dbfirstapproach/mutilevelaccordoin.html',dict)
