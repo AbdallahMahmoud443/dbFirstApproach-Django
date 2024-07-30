@@ -4,6 +4,7 @@ from dbfirstapproachapp.models import Categories, Employees, OrderDetails, Order
 import pyodbc
 from django.db.models import Q,Avg,Max,Min,Sum,Count
 from django.views.decorators.cache import cache_page
+from django.core.cache import cache
 # Create your views here.
 
 def ShowCategories(request):
@@ -214,13 +215,22 @@ def MutiLevelAccordoinDemo(request):
 def ShowOrdersUsingTamplateTag(request):
     return render(request,'dbfirstapproach/showorderusingtemplatetag.html')
 
-@cache_page(60 * 5) # 5 Minutes Output page cahching (get output of page from cahc memory)
+# @cache_page(60 * 5) # 5 Minutes Output page cahching (get output of page from cahc memory)
 def CachingDemo(request):
-    employees = Employees.objects.filter(employeeid__in=[1,2,4,8])
-    employees_ids = [emp.employeeid for emp in employees]
-    orders = Orders.objects.filter(employeeid__in=employees_ids,orderdate__month=3,orderdate__day=27);
-    orders_ids = [ order.orderid for order in orders] # ids for all orders
-    orders_details = OrderDetails.objects.filter(orderid__in=orders_ids)
+    if(cache.get("cache_employees") ==None):
+        employees = Employees.objects.order_by('employeeid')
+        cache.set("cache_employees",employees,3600) # cache for employees
+        employees_ids = [emp.employeeid for emp in employees]
+        orders = Orders.objects.filter(employeeid__in=employees_ids,orderdate__month=3,orderdate__day=27);
+        cache.set("cache_orders",orders,3600) # cache for Orders
+        orders_ids = [ order.orderid for order in orders] # ids for all orders
+        orders_details = OrderDetails.objects.filter(orderid__in=orders_ids)
+        cache.set("cache_orders_details",orders_details,3600) # cache for orders details
+    else:
+        employees = cache.get('cache_employees')
+        orders = cache.get('cache_orders')
+        orders_details = cache.get('cache_orders_details')
+    
     dict = {
         'employees':employees,
         'orders':orders,
