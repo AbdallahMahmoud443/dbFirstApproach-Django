@@ -89,7 +89,17 @@ DATABASES = {
     },
 }
 
+'''
+Local memory cache provider => used to store cache data in server memory but data was be large,it's prefer store it in database itself 
 
+'''
+
+CACHE = {
+    'default':{
+        'BACKEND':'django.core.cache.backends.locmem.LocMemCache',
+        'LOCATION':'ecom'
+    }
+}
 
 # Password validation
 # https://docs.djangoproject.com/en/4.2/ref/settings/#auth-password-validators
