@@ -1,3 +1,14 @@
+import csv
+from io import BytesIO
+import json
+import openpyxl
+from docx import Document # type: ignore
+
+import os
+
+from weasyprint import HTML
+
+from django.template.loader import render_to_string
 from django.shortcuts import render
 
 from dbfirstapproachapp.models import Categories, Employees, OrderDetails, Orders
@@ -5,6 +16,7 @@ import pyodbc
 from django.db.models import Q,Avg,Max,Min,Sum,Count
 from django.views.decorators.cache import cache_page
 from django.core.cache import cache
+from django.http import HttpResponse
 # Create your views here.
 
 def ShowCategories(request):
@@ -185,8 +197,7 @@ def FilteringQuerySetsDemo(request):
     
     
     return render(request,'dbfirstapproach/filteringDemo.html',dict)
-    
-    
+     
 def AccordoinDemo(request):
     #* Logic tricky
     orders =Orders.objects.filter(orderid__range=[10248,10255]).order_by('orderid')
@@ -196,7 +207,6 @@ def AccordoinDemo(request):
     dict ={'orders':orders,
            'orders_details':orders_details}
     return render(request,'dbfirstapproach/accordoindemo.html',dict)
-
 
 def MutiLevelAccordoinDemo(request):
     employees = Employees.objects.filter(employeeid__in=[1,2,4,8])
@@ -210,7 +220,6 @@ def MutiLevelAccordoinDemo(request):
         'orders_details':orders_details
     }
     return render(request,'dbfirstapproach/mutilevelaccordoin.html',dict)
-
 
 def ShowOrdersUsingTamplateTag(request):
     return render(request,'dbfirstapproach/showorderusingtemplatetag.html')
@@ -237,3 +246,117 @@ def CachingDemo(request):
         'orders_details':orders_details
     }
     return render(request,'dbfirstapproach/mutilevelaccordoin.html',dict)
+
+def ExportToCsv(request):
+    categories = Categories.objects.all()
+    filename = f'Category_data.csv' # filename
+    response = HttpResponse(content_type ='text/csv') # create response and defined type of data in response
+    '''
+    In a regular HTTP response, the Content-Disposition response header is a header indicating if the content is expected to be displayed inline in the browser, that is, as a Web page or as part of a Web page, or as an attachment, that is downloaded and saved locally.
+    '''
+    response['Content-disposition'] = f'attachment; filename="{filename}"' # key = value =>  filename="{filename}" defined return data 
+    writer = csv.writer(response) # used writer object to write data inside response
+    
+    writer.writerow(['Category Id','Category Name','Description'])
+    for category in categories:
+        writer.writerow([category.categoryid,
+                         category.categoryname,
+                         category.description])
+    
+    return response
+                                                                                                     
+def ExportToJson(request):
+    categories = Categories.objects.all()
+    filename = f'Category_data.json' # filename
+    response = HttpResponse(content_type ='application/json') # create response and defined type of data in response
+    response['Content-disposition'] = f'attachment; filename="{filename}"' # key = value =>  filename="{filename}" defined 
+    data = [{'categoryid':category.categoryid,
+             'categoryname':category.categoryname,
+             'description':category.description} for category in categories] 
+    json.dump(data,response) # send data as json format
+    return response
+
+# before Export data To Excel Format shloud be install openpyxl library
+def ExportToExcel(request):
+    categories = Categories.objects.all()
+    filename = f'Category_data.xlsx' # filename
+    # Generate Excel Workbook 
+    workbook = openpyxl.Workbook()
+    # Generate Excel Worksheet
+    worksheet = workbook.active
+    # Add Header
+    headers =['Category Id','Category Name','Description']
+    worksheet.append(headers)
+    # Add Data
+    for category in categories:
+        worksheet.append([
+        category.categoryid,
+        category.categoryname,
+        category.description
+        ])
+    # save the workbook to bytesIO buffer
+    '''
+    StringIO and BytesIO are classes from the io module that provide file-like objects in memory. They act like virtual files, but instead of storing data on an Operating system disk, they store it in memory as strings (StringIO) or bytes (BytesIO).
+    '''
+    buffer = BytesIO()
+    workbook.save(buffer) # save  workbook in buffer
+    buffer.seek(0) # 0: means your reference point is the beginning of the file
+    
+    # Return the Excel File as http response
+    response = HttpResponse(buffer.read(),content_type= 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet')
+    response['Content-Disposition'] = f'attachment; filename="{filename}"'
+    
+    return response
+    
+
+# before Export data To Word Format shloud be install python-docx library
+def ExportToWord(request):
+    categories = Categories.objects.all()
+    filename = f'Category_data.docx' # filename
+    
+    # Generate Word File
+    document = Document()
+    
+    # Add a table with headers
+    table = document.add_table(rows=1, cols=3)
+    table.style = 'TableGrid'
+    header_row = table.rows[0].cells
+    header_row[0].text = 'Category ID'
+    header_row[1].text = 'Category Name'
+    header_row[2].text = 'Description'
+     
+    for cell in header_row:
+        cell.paragraphs[0].runs[0].font.bold = True # text bold
+
+    # Add data to the table
+    for category in categories:
+        row = table.add_row().cells
+        row[0].text = str(category.categoryid)
+        row[1].text = category.categoryname
+        row[2].text = category.description
+
+    # Save the Word document to a BytesIO buffer
+    buffer = BytesIO()
+    document.save(buffer)
+    buffer.seek(0)
+
+    # Return the Word file as the HTTP response
+    response = HttpResponse(buffer.read(), content_type='application/vnd.openxmlformats-officedocument.wordprocessingml.document')
+    response['Content-Disposition'] = f'attachment; filename="{filename}"'
+
+    return response
+
+# before Export data To Word Format shloud be install weasyprint library and must install GTK and run sever from terminal
+def ExportToPDF(request):
+    os.add_dll_directory(r"C:\Program Files\GTK3-Runtime Win64\bin")
+    categories = Categories.objects.all()
+    filename = f'Category_data.pdf' # filename
+    
+    response = HttpResponse(content_type='application/pdf')
+    response['Content-Disposition'] = f'attachment; filename="{filename}"'
+    
+    html_string = render_to_string('dbfirstapproach/showcategoriestopdf.html',{'categories':categories})
+    html = HTML(string=html_string)
+    html.write_pdf(response) # save webpage as string to response in formatting pdf
+    
+    return response

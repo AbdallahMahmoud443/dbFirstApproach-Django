@@ -94,21 +94,21 @@ Local memory cache provider => used to store cache data in server memory but dat
 '''
 
 CACHES = {
-    # 'default':{
-    #     'BACKEND':'django.core.cache.backends.locmem.LocMemCache',
-    #     'LOCATION':'ecom'
-    # }
+    'default':{
+        'BACKEND':'django.core.cache.backends.locmem.LocMemCache',
+        'LOCATION':'ecom'
+    }
     # 'default':{
     #     # use this command  to create cache table => python manage.py createcachetable
     #     "BACKEND": "django.core.cache.backends.db.DatabaseCache",
     #     "LOCATION": "my_cache_table",
     #  }
     # filebased caching is less secure than database caching
-    'default':{
-    #     # use this command  to create cache table => python manage.py createcachetable
-         "BACKEND": "django.core.cache.backends.filebased.FileBasedCache",
-         "LOCATION": "D:/MyCache/", # this folder must create in your device
-     }
+#     'default':{
+#         # use this command  to create cache table => python manage.py createcachetable
+#          "BACKEND": "django.core.cache.backends.filebased.FileBasedCache",
+#          "LOCATION": "D:/MyCache/", # this folder must create in your device
+#      }
 }
 
 # Password validation
