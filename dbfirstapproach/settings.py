@@ -98,12 +98,17 @@ CACHES = {
     #     'BACKEND':'django.core.cache.backends.locmem.LocMemCache',
     #     'LOCATION':'ecom'
     # }
+    # 'default':{
+    #     # use this command  to create cache table => python manage.py createcachetable
+    #     "BACKEND": "django.core.cache.backends.db.DatabaseCache",
+    #     "LOCATION": "my_cache_table",
+    #  }
+    # filebased caching is less secure than database caching
     'default':{
-        # use this command  to create cache table => python manage.py createcachetable
-        "BACKEND": "django.core.cache.backends.db.DatabaseCache",
-        "LOCATION": "my_cache_table",
+    #     # use this command  to create cache table => python manage.py createcachetable
+         "BACKEND": "django.core.cache.backends.filebased.FileBasedCache",
+         "LOCATION": "D:/MyCache/", # this folder must create in your device
      }
-    
 }
 
 # Password validation
