@@ -90,15 +90,20 @@ DATABASES = {
 }
 
 '''
-Local memory cache provider => used to store cache data in server memory but data was be large,it's prefer store it in database itself 
-
+Local memory cache provider => used to store cache data in server memory but data was be large,it's prefer store it in database itself,when data is large, prefer store it in database for performance and security
 '''
 
-CACHE = {
+CACHES = {
+    # 'default':{
+    #     'BACKEND':'django.core.cache.backends.locmem.LocMemCache',
+    #     'LOCATION':'ecom'
+    # }
     'default':{
-        'BACKEND':'django.core.cache.backends.locmem.LocMemCache',
-        'LOCATION':'ecom'
-    }
+        # use this command  to create cache table => python manage.py createcachetable
+        "BACKEND": "django.core.cache.backends.db.DatabaseCache",
+        "LOCATION": "my_cache_table",
+     }
+    
 }
 
 # Password validation

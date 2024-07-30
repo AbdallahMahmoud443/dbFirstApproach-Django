@@ -218,7 +218,7 @@ def ShowOrdersUsingTamplateTag(request):
 # @cache_page(60 * 5) # 5 Minutes Output page cahching (get output of page from cahc memory)
 def CachingDemo(request):
     if(cache.get("cache_employees") ==None):
-        employees = Employees.objects.order_by('employeeid')
+        employees = Employees.objects.all().order_by('employeeid')
         cache.set("cache_employees",employees,3600) # cache for employees
         employees_ids = [emp.employeeid for emp in employees]
         orders = Orders.objects.filter(employeeid__in=employees_ids,orderdate__month=3,orderdate__day=27);
